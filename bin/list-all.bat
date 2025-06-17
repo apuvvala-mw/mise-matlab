@@ -1,5 +1,0 @@
-@echo off
-echo R2025a
-echo R2024b
-echo R2024a
-echo R2023b
