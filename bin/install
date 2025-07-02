@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-MATLAB_VERSION="$1"
-INSTALL_DIR="$2"
-TOOLBOXES="$3" # Comma-separated, e.g., "MATLAB,Signal_Processing_Toolbox"
+echo "[DEBUG] ASDF_INSTALL_VERSION='${ASDF_INSTALL_VERSION}'"
+echo "[DEBUG] ASDF_INSTALL_PATH='${ASDF_INSTALL_PATH}'"
+
+# Optional env var: comma-separated list of toolboxes
+TOOLBOXES="${MATLAB_TOOLBOXES:-MATLAB}"
+
+if [[ -z "$ASDF_INSTALL_VERSION" || -z "$ASDF_INSTALL_PATH" ]]; then
+  echo "[ERROR] Missing required environment variables"
+  exit 1
+fi
 
 # Detect OS and set MPM download URL
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -22,7 +29,7 @@ else
   exit 1
 fi
 
-# Download MPM if not present
+# Download MPM if not already available
 if ! command -v mpm &> /dev/null; then
   echo "MPM not found. Downloading..."
   curl -L -o "$MPM_BIN" "$MPM_URL"
@@ -30,10 +37,10 @@ if ! command -v mpm &> /dev/null; then
   export PATH="$PWD:$PATH"
 fi
 
-# Run MPM to install MATLAB and toolboxes
+# Run MPM
 "$MPM_BIN" install \
-  --release="${MATLAB_VERSION}" \
-  --destination="${INSTALL_DIR}" \
-  --products="${TOOLBOXES}"
+  --release="$ASDF_INSTALL_VERSION" \
+  --destination="$ASDF_INSTALL_PATH" \
+  --products="$TOOLBOXES"
 
-echo "MATLAB ${MATLAB_VERSION} with toolboxes [${TOOLBOXES}] installed at ${INSTALL_DIR}"
+echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${TOOLBOXES}] installed at ${ASDF_INSTALL_PATH}"
