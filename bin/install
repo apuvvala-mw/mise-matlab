@@ -46,10 +46,15 @@ echo "--release=$ASDF_INSTALL_VERSION"
 echo "--destination=$ASDF_INSTALL_PATH"
 echo "--products=$PRODUCTS"
 
+echo "[DEBUG] \$MATLAB_TOOLBOXES='$MATLAB_TOOLBOXES'"
+env | grep MATLAB_TOOLBOXES
+
+echo "[DEBUG] final --products=\"$PRODUCTS\""
+
 # Run MPM
 "$MPM_BIN" install \
   --release="$ASDF_INSTALL_VERSION" \
   --destination="$ASDF_INSTALL_PATH" \
-  --products="${PRODUCTS}"
+  --products="$PRODUCTS"
 
 echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${PRODUCTS}] installed at ${ASDF_INSTALL_PATH}"
