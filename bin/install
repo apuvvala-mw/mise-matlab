@@ -50,6 +50,6 @@ echo "--products=$PRODUCTS"
 "$MPM_BIN" install \
   --release="$ASDF_INSTALL_VERSION" \
   --destination="$ASDF_INSTALL_PATH" \
-  --products="$PRODUCTS"
+  --products="${PRODUCTS}"
 
 echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${PRODUCTS}] installed at ${ASDF_INSTALL_PATH}"
