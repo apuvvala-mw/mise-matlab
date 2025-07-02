@@ -37,10 +37,24 @@ if ! command -v mpm &> /dev/null; then
   export PATH="$PWD:$PATH"
 fi
 
-# Run MPM
+# Build product arguments
+IFS=',' read -ra PRODUCT_LIST <<< "$TOOLBOXES"
+INSTALL_ARGS=()
+for PRODUCT in "${PRODUCT_LIST[@]}"; do
+  PRODUCT="$(echo "$PRODUCT" | xargs)"  # Trim whitespace
+  INSTALL_ARGS+=(--products="$PRODUCT")
+done
+
+# Show full install command for debugging
+echo "Installing with the following parameters:"
+echo "--release=$ASDF_INSTALL_VERSION"
+echo "--destination=$ASDF_INSTALL_PATH"
+printf '%s\n' "${INSTALL_ARGS[@]}"
+
+# Run MPM with all parsed arguments
 "$MPM_BIN" install \
   --release="$ASDF_INSTALL_VERSION" \
   --destination="$ASDF_INSTALL_PATH" \
-  --products="$TOOLBOXES"
+  "${INSTALL_ARGS[@]}"
 
 echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${TOOLBOXES}] installed at ${ASDF_INSTALL_PATH}"
