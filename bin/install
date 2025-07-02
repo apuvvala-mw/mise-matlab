@@ -4,7 +4,7 @@ set -e
 echo "[DEBUG] ASDF_INSTALL_VERSION='${ASDF_INSTALL_VERSION}'"
 echo "[DEBUG] ASDF_INSTALL_PATH='${ASDF_INSTALL_PATH}'"
 
-# Optional env var: comma-separated list of toolboxes
+# Optional env var: comma-separated list of toolboxes (defaults to MATLAB only)
 TOOLBOXES="${MATLAB_TOOLBOXES:-MATLAB}"
 
 if [[ -z "$ASDF_INSTALL_VERSION" || -z "$ASDF_INSTALL_PATH" ]]; then
@@ -37,24 +37,19 @@ if ! command -v mpm &> /dev/null; then
   export PATH="$PWD:$PATH"
 fi
 
-# Build product arguments
-IFS=',' read -ra PRODUCT_LIST <<< "$TOOLBOXES"
-INSTALL_ARGS=()
-for PRODUCT in "${PRODUCT_LIST[@]}"; do
-  PRODUCT="$(echo "$PRODUCT" | xargs)"  # Trim whitespace
-  INSTALL_ARGS+=(--products="$PRODUCT")
-done
+# Convert comma-separated toolbox list to space-separated string
+PRODUCTS="$(echo "$TOOLBOXES" | tr ',' ' ')"
 
-# Show full install command for debugging
+# Debug info
 echo "Installing with the following parameters:"
 echo "--release=$ASDF_INSTALL_VERSION"
 echo "--destination=$ASDF_INSTALL_PATH"
-printf '%s\n' "${INSTALL_ARGS[@]}"
+echo "--products=$PRODUCTS"
 
-# Run MPM with all parsed arguments
+# Run MPM
 "$MPM_BIN" install \
   --release="$ASDF_INSTALL_VERSION" \
   --destination="$ASDF_INSTALL_PATH" \
-  "${INSTALL_ARGS[@]}"
+  --products="$PRODUCTS"
 
-echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${TOOLBOXES}] installed at ${ASDF_INSTALL_PATH}"
+echo "✅ MATLAB ${ASDF_INSTALL_VERSION} with toolboxes [${PRODUCTS}] installed at ${ASDF_INSTALL_PATH}"
